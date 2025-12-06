@@ -4,6 +4,8 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
+import { GA4Provider } from "@/components/analytics"
+import { PageViewTracker } from "@/components/analytics/page-view-tracker"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -21,8 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={null}>{children}</Suspense>
-        <Analytics />
+        <GA4Provider>
+          <Suspense fallback={null}>{children}</Suspense>
+          <Suspense fallback={null}>
+            <PageViewTracker />
+          </Suspense>
+          <Analytics />
+        </GA4Provider>
       </body>
     </html>
   )

@@ -1,14 +1,37 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Menu, X, ChefHat, ShoppingCart, User } from "lucide-react"
+import { Menu, X, ChefHat, ShoppingCart, User, Search } from "lucide-react"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20)
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300",
+        isScrolled
+          ? "bg-background/95 backdrop-blur-md shadow-lg border-border/50"
+          : "bg-background/80 backdrop-blur-sm border-border"
+      )}
+    >
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -24,6 +47,10 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
+            <Link href="/search" className="text-foreground hover:text-primary transition-colors flex items-center gap-1">
+              <Search className="w-4 h-4" />
+              Search
+            </Link>
             <a href="#kits" className="text-foreground hover:text-primary transition-colors">
               Cooking Kits
             </a>
@@ -59,10 +86,22 @@ export default function Header() {
           </Button>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border">
+        {/* Mobile Navigation - Using layout animation for smooth height transitions */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              layout
+              className="md:hidden py-4 border-t border-border"
+            >
             <nav className="flex flex-col gap-4">
+              <Link href="/search" className="text-foreground hover:text-primary transition-colors py-2 flex items-center gap-2">
+                <Search className="w-4 h-4" />
+                Search
+              </Link>
               <a href="#kits" className="text-foreground hover:text-primary transition-colors py-2">
                 Cooking Kits
               </a>
@@ -89,9 +128,10 @@ export default function Header() {
                 </Button>
               </div>
             </nav>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </header>
+    </motion.header>
   )
 }

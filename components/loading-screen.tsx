@@ -1,103 +1,98 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChefHat, Heart, Utensils, Users } from "lucide-react"
+import { motion } from "framer-motion"
+import {
+  LoadingBackground,
+  LoadingLogo,
+  LoadingProgress,
+  LoadingText,
+} from "@/components/loading"
 
+/**
+ * LoadingScreen - Ultra-revamped loading screen
+ * Features stunning visuals, 3D animations, and interactive elements
+ */
 export default function LoadingScreen() {
   const [currentIcon, setCurrentIcon] = useState(0)
   const [progress, setProgress] = useState(0)
 
-  const icons = [
-    { icon: "ChefHat", color: "text-primary", label: "Preparing Kitchen" },
-    { icon: "Utensils", color: "text-secondary", label: "Gathering Ingredients" },
-    { icon: "Users", color: "text-primary", label: "Setting Family Table" },
-    { icon: "Heart", color: "text-secondary", label: "Ready to Cook" },
-  ]
-
-  const getIconComponent = (iconName: string) => {
-    switch (iconName) {
-      case "ChefHat":
-        return <ChefHat />
-      case "Utensils":
-        return <Utensils />
-      case "Users":
-        return <Users />
-      case "Heart":
-        return <Heart />
-      default:
-        return <ChefHat />
-    }
-  }
-
   useEffect(() => {
+    // Icon rotation interval
     const iconInterval = setInterval(() => {
-      setCurrentIcon((prev) => (prev + 1) % icons.length)
-    }, 800)
+      setCurrentIcon((prev) => (prev + 1) % 4)
+    }, 1000)
 
+    // Progress animation
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(progressInterval)
           return 100
         }
-        return prev + Math.random() * 15 + 5
+        // Smooth progress with some randomness
+        const increment = Math.random() * 12 + 6
+        return Math.min(prev + increment, 100)
       })
-    }, 200)
+    }, 250)
 
     return () => {
       clearInterval(iconInterval)
       clearInterval(progressInterval)
     }
-  }, [icons.length])
+  }, [])
 
   return (
-    <div className="fixed inset-0 z-50 bg-gradient-to-br from-primary/10 via-background to-secondary/5 flex items-center justify-center">
-      <div className="text-center space-y-8 max-w-md mx-auto px-6">
-        {/* Logo */}
-        <div className="space-y-4">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto animate-pulse">
-            <ChefHat className="w-12 h-12 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Gourmet Fusion</h1>
-            <p className="text-muted-foreground">Family Cooking</p>
-          </div>
-        </div>
+    <div className="fixed inset-0 z-[9999] bg-background flex items-center justify-center overflow-hidden">
+      {/* Dynamic Background */}
+      <LoadingBackground />
 
-        {/* Animated Icon */}
-        <div className="space-y-4">
-          <div className="w-16 h-16 bg-card border border-border rounded-2xl flex items-center justify-center mx-auto shadow-lg">
-            <div className={`w-8 h-8 ${icons[currentIcon].color} animate-bounce`}>
-              {getIconComponent(icons[currentIcon].icon)}
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground animate-pulse">
-            {icons[currentIcon].label}...
-          </p>
-        </div>
+      {/* Content Container */}
+      <div className="relative z-10 w-full max-w-2xl mx-auto px-6 flex flex-col items-center space-y-12">
+        {/* Animated Logo */}
+        <LoadingLogo />
 
-        {/* Progress Bar */}
-        <div className="space-y-3">
-          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {Math.round(progress)}% Complete
-          </p>
-        </div>
+        {/* Animated Loading Text with Icons */}
+        <LoadingText currentIcon={currentIcon} />
 
-        {/* Loading Message */}
-        <div className="space-y-2">
-          <p className="text-sm text-foreground font-medium">
+        {/* Progress Indicator */}
+        <LoadingProgress progress={progress} />
+
+        {/* Additional Loading Message */}
+        <motion.div
+          className="text-center space-y-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1.1 }}
+        >
+          <motion.p
+            className="text-sm lg:text-base text-foreground font-medium"
+            animate={{
+              opacity: [0.7, 1, 0.7],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
             Preparing your family cooking experience
-          </p>
-          <p className="text-xs text-muted-foreground">
+          </motion.p>
+          <motion.p
+            className="text-xs lg:text-sm text-muted-foreground"
+            animate={{
+              opacity: [0.5, 0.8, 0.5],
+            }}
+            transition={{
+              duration: 2.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5,
+            }}
+          >
             Just a few more moments...
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </div>
     </div>
   )

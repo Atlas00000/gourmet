@@ -5,7 +5,7 @@ import { ChefHat, Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } f
 
 export default function Footer() {
   return (
-    <footer className="bg-card border-t border-border">
+    <footer id="contact" className="bg-card border-t border-border">
       <div className="container mx-auto px-6 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
